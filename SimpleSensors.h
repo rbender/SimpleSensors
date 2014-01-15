@@ -49,8 +49,8 @@ class SensorCollection {
     int getSize() const;
     SimpleSensor* getSensor(int index);
 
-    void dumpRawValues(Print* printer);
-    void dumpRawValuesAsJson(Print* printer);
+    void dumpRawValues(Print &printer);
+    void dumpRawValuesAsJson(Print &printer);
 
   private:
     SimpleSensor** _sensors;

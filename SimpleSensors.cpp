@@ -57,35 +57,35 @@ SimpleSensor* SensorCollection::getSensor(int index) {
   return _sensors[index];
 }
 
-void SensorCollection::dumpRawValues(Print* printer) {
+void SensorCollection::dumpRawValues(Print &printer) {
   for (int i = 0; i < _size; i++) {
     SimpleSensor* sensor = _sensors[i];
 
-    printer->print(sensor->getShortName());
-    printer->print("=");
-    printer->println(sensor->readRaw());
+    printer.print(sensor->getShortName());
+    printer.print("=");
+    printer.println(sensor->readRaw());
   }
 }
 
-void SensorCollection::dumpRawValuesAsJson(Print* printer) {
+void SensorCollection::dumpRawValuesAsJson(Print &printer) {
 
-  printer->print("{\"sensors\":[");
+  printer.print("{\"sensors\":[");
 
   for (int i = 0; i < _size; i++) {
     SimpleSensor* sensor = _sensors[i];
 
-    printer->print("{\"name\":\"");
-    printer->print(sensor->getShortName());
-    printer->print("\", \"value\":");
-    printer->print(sensor->readRaw());
-    printer->print("}");
+    printer.print("{\"name\":\"");
+    printer.print(sensor->getShortName());
+    printer.print("\", \"value\":");
+    printer.print(sensor->readRaw());
+    printer.print("}");
 
     if (i < _size - 1) {
-      printer->print(",");
+      printer.print(",");
     }
   }
 
-  printer->println("]}");
+  printer.println("]}");
 }
 
 

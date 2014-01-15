@@ -14,6 +14,6 @@ void setup() {
 
 void loop(){
 
-  sensors.dumpRawValuesAsJson(&Serial);
+  sensors.dumpRawValuesAsJson(Serial);
   delay(500);
 }
