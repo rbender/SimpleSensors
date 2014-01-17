@@ -76,7 +76,7 @@ void SensorCollection::dumpRawValuesAsJson(Print &printer) {
 
     printer.print("{\"name\":\"");
     printer.print(sensor->getShortName());
-    printer.print("\", \"value\":");
+    printer.print("\", \"raw_value\":");
     printer.print(sensor->readRaw());
     printer.print("}");
 
