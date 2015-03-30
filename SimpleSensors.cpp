@@ -1,27 +1,42 @@
 #include "Arduino.h"
 #include "SimpleSensors.h"
+#include "utility/JsonPrinter.h"
 
-SimpleSensor::SimpleSensor(int pin, char* shortName) {
-
-  _pin = pin;
-  _shortName = shortName;
+SimpleSensor::SimpleSensor(char* id, char* name, char* type) {
+  _id = id;
+  _name = name;
+  _type = type;
 }
 
-void SimpleSensor::setup() {
-  pinMode(_pin, INPUT);
+char* SimpleSensor::getId() const {
+  return _id;
 }
 
-int SimpleSensor::getPin() const {
-  return _pin;
+char* SimpleSensor::getName() const {
+  return _name;
 }
 
-char* SimpleSensor::getShortName() const {
-  return _shortName;
+char* SimpleSensor::getType() const {
+  return _type;
 }
 
 //-------------------------------------------
 
-AnalogSensor::AnalogSensor(int pin, char* shortName) : SimpleSensor(pin, shortName) {}
+SimplePinSensor::SimplePinSensor(int pin, char* id, char* name, char* type) : SimpleSensor(id, name, type) {
+  _pin = pin;
+}
+
+void SimplePinSensor::setup() {
+  pinMode(_pin, INPUT);
+}
+
+int SimplePinSensor::getPin() const {
+  return _pin;
+}
+
+//-------------------------------------------
+
+AnalogSensor::AnalogSensor(int pin, char* id, char* name, char* type) : SimplePinSensor(pin, id, name, type) {}
 
 int AnalogSensor::readRaw() {
   return analogRead(_pin);
@@ -29,7 +44,7 @@ int AnalogSensor::readRaw() {
 
 //-------------------------------------------
 
-DigitalSensor::DigitalSensor(int pin, char* shortName) : SimpleSensor(pin, shortName) {}
+DigitalSensor::DigitalSensor(int pin, char* id, char* name, char* type) : SimplePinSensor(pin, id, name, type) {}
 
 int DigitalSensor::readRaw() {
   return digitalRead(_pin);
@@ -37,9 +52,10 @@ int DigitalSensor::readRaw() {
 
 //-------------------------------------------
 
-SensorCollection::SensorCollection(SimpleSensor* sensors[], int size) {
-  _sensors = sensors;
-  _size = size;
+SensorCollection::SensorCollection(char* id, char* name) {
+  _id = id;
+  _name = name;
+  _size = 0;
 }
 
 void SensorCollection::setup() {
@@ -53,6 +69,11 @@ int SensorCollection::getSize() const {
   return _size;
 }
 
+void SensorCollection::addSensor(SimpleSensor& sensor) {
+    _sensors[_size] = &sensor;
+    _size++;
+}
+
 SimpleSensor* SensorCollection::getSensor(int index) {
   return _sensors[index];
 }
@@ -61,7 +82,7 @@ void SensorCollection::dumpRawValues(Print &printer) {
   for (int i = 0; i < _size; i++) {
     SimpleSensor* sensor = _sensors[i];
 
-    printer.print(sensor->getShortName());
+    printer.print(sensor->getId());
     printer.print("=");
     printer.println(sensor->readRaw());
   }
@@ -69,23 +90,56 @@ void SensorCollection::dumpRawValues(Print &printer) {
 
 void SensorCollection::dumpRawValuesAsJson(Print &printer) {
 
-  printer.print("{\"sensors\":[");
-
+  JsonPrinter jsonPrinter(printer);
+  
+  jsonPrinter.startObject();
+  
+  jsonPrinter.property("id");  
+  jsonPrinter.stringValue(_id);
+  jsonPrinter.comma();
+  
+  jsonPrinter.property("name");
+  jsonPrinter.stringValue(_name);
+  jsonPrinter.comma();
+  
+  jsonPrinter.property("sensors");
+  jsonPrinter.startArray();
+  
   for (int i = 0; i < _size; i++) {
     SimpleSensor* sensor = _sensors[i];
-
-    printer.print("{\"name\":\"");
-    printer.print(sensor->getShortName());
-    printer.print("\", \"raw_value\":");
-    printer.print(sensor->readRaw());
-    printer.print("}");
-
+	
+	dumpRawValueAsJson(jsonPrinter, sensor);
+	
     if (i < _size - 1) {
-      printer.print(",");
+      jsonPrinter.comma();
     }
   }
+  
+  jsonPrinter.endArray();
+  jsonPrinter.endObject();
+  jsonPrinter.newline();
+}
 
-  printer.println("]}");
+void SensorCollection::dumpRawValueAsJson(JsonPrinter& jsonPrinter, SimpleSensor* sensor) {
+
+	jsonPrinter.startObject();
+	
+	jsonPrinter.property("id");
+	jsonPrinter.stringValue(sensor->getId());
+	jsonPrinter.comma();
+	
+	jsonPrinter.property("name");
+	jsonPrinter.stringValue(sensor->getName());
+	jsonPrinter.comma();
+	
+	jsonPrinter.property("type");
+	jsonPrinter.stringValue(sensor->getType());
+	jsonPrinter.comma();
+	
+	jsonPrinter.property("raw_value");
+	jsonPrinter.intValue(sensor->readRaw());
+	
+	jsonPrinter.endObject();	
 }
 
 
