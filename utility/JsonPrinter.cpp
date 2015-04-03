@@ -50,6 +50,26 @@ void JsonPrinter::booleanValue(boolean value) {
   }
 }
 
+void JsonPrinter::stringProperty(char* name, char*value) {
+	property(name);
+	stringValue(value);
+}
+
+void JsonPrinter::intProperty(char* name, int value) {
+	property(name);
+	intValue(value);
+}
+
+void JsonPrinter::floatProperty(char* name, float value) {
+	property(name);
+	floatValue(value);
+}
+
+void JsonPrinter::booleanProperty(char* name, boolean value) {
+	property(name);
+	booleanValue(value);
+}
+
 void JsonPrinter::comma() {
   _printer->print(",");
 }

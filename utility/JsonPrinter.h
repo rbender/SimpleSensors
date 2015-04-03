@@ -21,6 +21,11 @@ class JsonPrinter {
     void intValue(int value);
     void floatValue(float value);    
     void booleanValue(boolean value);
+		
+		void stringProperty(char* name, char*value);
+    void intProperty(char* name, int value);
+    void floatProperty(char* name, float value);    
+    void booleanProperty(char* name, boolean value);
     
     void comma();
     
