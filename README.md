@@ -1,19 +1,23 @@
-Simple Sensor Library
-=====================
+# Simple Sensor Library
 
-This project is an object-oriented Arduino library for
-reading sensor values and outputting them over a serial port
-as JSON (or other formats).
+This project is an object-oriented Arduino library for reading sensor values and outputting them over a serial port as JSON (or other formats).
 
-Each SimpleSensor object has a sub-type (AnalogSensor or DigitalSensor),
-pin number and a short name
+The root datatype is SimpleSensor, with subclasses for generic analog and digital sensors as well as subclasses for specific sensor hardware (eg: TMP36) 
 
-SimpleSensors are collected into a SensorCollection object
-which performs batch operations on the sensors (setup, reading, etc)
+Each SimpleSensor has the following properties:
+- short identifier
+- name
+- type (eg: "temperature", "light", "humidity", etc)
+- pin number
+- units (eg: "volts", "lumens", "F", etc)
 
-To-Do
------
-- Documentation
+SimpleSensors are collected into a SensorCollection object which performs batch operations on the sensors (setup, reading, etc).
+
+##To-Do
+
+- More documentation
 - More sensor subtypes
-- Conversion of raw sensor data
-- Handle external AREF
+- Support for sending values over a network (HTTP, MQTT, etc)
+- Support for sending values via XBee
+- Support for I2C sensors
+- Break the code for emitting sensor values out from SensorCollection
