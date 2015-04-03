@@ -111,6 +111,14 @@ void SensorCollection::setup() {
   }
 }
 
+char* SensorCollection::getId() const {
+  return _id;
+}
+
+char* SensorCollection::getName() const {
+  return _name;
+}
+
 int SensorCollection::getSize() const {
   return _size;
 }
@@ -124,75 +132,85 @@ SimpleSensor* SensorCollection::getSensor(int index) {
   return _sensors[index];
 }
 
-void SensorCollection::dumpValues(Print &printer) {
-  for (int i = 0; i < _size; i++) {
-    SimpleSensor* sensor = _sensors[i];
+//-------------------------------------------
 
-    printer.print(sensor->getId());
-    printer.print("=");
-    printer.println(sensor->readRaw());
-  }
+PlainTextSensorEmitter::PlainTextSensorEmitter(Print &printer) {
+	_printer = &printer;
 }
 
-void SensorCollection::dumpValuesAsJson(Print &printer) {
+void PlainTextSensorEmitter::emitSensor(SimpleSensor* sensor) {
+	
+  _printer->print(sensor->getId());
+  _printer->print("=");
+  _printer->println(sensor->readRaw());
+}
 
-  JsonPrinter jsonPrinter(printer);
-  
-  jsonPrinter.startObject();
-  
-  jsonPrinter.property("id");  
-  jsonPrinter.stringValue(_id);
-  jsonPrinter.comma();
-  
-  jsonPrinter.property("name");
-  jsonPrinter.stringValue(_name);
-  jsonPrinter.comma();
-  
-  jsonPrinter.property("sensors");
-  jsonPrinter.startArray();
-  
-  for (int i = 0; i < _size; i++) {
-    SimpleSensor* sensor = _sensors[i];
+void PlainTextSensorEmitter::emitSensorCollection(SensorCollection& sensors) {
 	
-	dumpValueAsJson(jsonPrinter, sensor);
+  for (int i = 0; i < sensors.getSize(); i++) {
+    SimpleSensor* sensor = sensors.getSensor(i);
+		emitSensor(sensor);
+  }	
+}
+
+//-------------------------------------------
+
+JsonSensorEmitter::JsonSensorEmitter(Print &printer) : _jsonPrinter(printer) {}
+
+void JsonSensorEmitter::emitSensorCollection(SensorCollection& sensors) {
+  
+  _jsonPrinter.startObject();
+  
+  _jsonPrinter.stringProperty("id", sensors.getId());
+  _jsonPrinter.comma();
+  
+  _jsonPrinter.stringProperty("name", sensors.getName());
+  _jsonPrinter.comma();
+  
+  _jsonPrinter.property("sensors");
+  _jsonPrinter.startArray();
+  
+	int numSensors = sensors.getSize();
+  for (int i = 0; i < numSensors; i++) {
+    SimpleSensor* sensor = sensors.getSensor(i);
 	
-    if (i < _size - 1) {
-      jsonPrinter.comma();
+	  emitSensor(sensor);
+	
+    if (i < numSensors - 1) {
+      _jsonPrinter.comma();
     }
   }
   
-  jsonPrinter.endArray();
-  jsonPrinter.endObject();
-  jsonPrinter.newline();
+  _jsonPrinter.endArray();
+  _jsonPrinter.endObject();
+  _jsonPrinter.newline();
 }
 
-void SensorCollection::dumpValueAsJson(JsonPrinter& jsonPrinter, SimpleSensor* sensor) {
+void JsonSensorEmitter::emitSensor(SimpleSensor* sensor) {
 
 	int rawValue = sensor->readRaw();
 	float value = sensor->convertRaw(rawValue);
 
-	jsonPrinter.startObject();
+	_jsonPrinter.startObject();
 	
-	jsonPrinter.stringProperty("id", sensor->getId());
-	jsonPrinter.comma();
+	_jsonPrinter.stringProperty("id", sensor->getId());
+	_jsonPrinter.comma();
 	
-	jsonPrinter.stringProperty("name", sensor->getName());
-	jsonPrinter.comma();
+	_jsonPrinter.stringProperty("name", sensor->getName());
+	_jsonPrinter.comma();
 	
-	jsonPrinter.stringProperty("type", sensor->getType());
-	jsonPrinter.comma();
+	_jsonPrinter.stringProperty("type", sensor->getType());
+	_jsonPrinter.comma();
 	
-	jsonPrinter.floatProperty("value", value);
-	jsonPrinter.comma();	
+	_jsonPrinter.floatProperty("value", value);
+	_jsonPrinter.comma();	
 	
-	jsonPrinter.intProperty("raw_value", rawValue);
-	jsonPrinter.comma();
+	_jsonPrinter.intProperty("raw_value", rawValue);
+	_jsonPrinter.comma();
 	
 	if (sensor->getUnits() != NULL) {
-		jsonPrinter.stringProperty("units", sensor->getUnits());			
+		_jsonPrinter.stringProperty("units", sensor->getUnits());			
 	}
 	
-	jsonPrinter.endObject();	
+	_jsonPrinter.endObject();	
 }
-
-

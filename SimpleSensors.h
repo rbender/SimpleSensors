@@ -90,20 +90,41 @@ class SensorCollection {
     SensorCollection(char* id, char* name);
     void setup();
 
+    char* getId() const;
+		char* getName() const;
     int getSize() const;
     void addSensor(SimpleSensor& sensor);
     SimpleSensor* getSensor(int index);
-
-    void dumpValues(Print &printer);
-    void dumpValuesAsJson(Print &printer);
 
   private:
     SimpleSensor* _sensors[MAX_SENSORS];
     int _size;
     char* _id;
     char* _name;
+};
+
+//-------------------------------------------
+
+class PlainTextSensorEmitter {
 	
-	void dumpValueAsJson(JsonPrinter& jsonPrinter, SimpleSensor* sensor);
+  public:
+	  PlainTextSensorEmitter(Print &printer);
+		void emitSensor(SimpleSensor* sensor);
+		void emitSensorCollection(SensorCollection& sensors);
+		
+	private:
+		Print* _printer;		
+};
+
+class JsonSensorEmitter {
+	
+	public:
+		JsonSensorEmitter(Print &printer);
+		void emitSensor(SimpleSensor* sensor);
+		void emitSensorCollection(SensorCollection& sensors);
+		
+	private:
+		JsonPrinter _jsonPrinter;	
 };
 
 #endif
