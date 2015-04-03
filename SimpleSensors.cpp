@@ -2,10 +2,11 @@
 #include "SimpleSensors.h"
 #include "utility/JsonPrinter.h"
 
-SimpleSensor::SimpleSensor(char* id, char* name, char* type) {
+SimpleSensor::SimpleSensor(char* id, char* name, char* type, char* units) {
   _id = id;
   _name = name;
   _type = type;
+  _units = units;
 }
 
 char* SimpleSensor::getId() const {
@@ -20,9 +21,22 @@ char* SimpleSensor::getType() const {
   return _type;
 }
 
+char* SimpleSensor::getUnits() const {
+  return _units;
+}
+
+float SimpleSensor::read() {
+	int rawValue = readRaw();
+	return convertRaw(rawValue);
+}
+
+float SimpleSensor::convertRaw(int rawValue) {
+	return (float)rawValue;
+}
+
 //-------------------------------------------
 
-SimplePinSensor::SimplePinSensor(int pin, char* id, char* name, char* type) : SimpleSensor(id, name, type) {
+SimplePinSensor::SimplePinSensor(int pin, char* id, char* name, char* type, char* units) : SimpleSensor(id, name, type, units) {
   _pin = pin;
 }
 
@@ -36,20 +50,52 @@ int SimplePinSensor::getPin() const {
 
 //-------------------------------------------
 
-AnalogSensor::AnalogSensor(int pin, char* id, char* name, char* type) : SimplePinSensor(pin, id, name, type) {}
+AnalogSensor::AnalogSensor(int pin, char* id, char* name, char* type, char* units) : SimplePinSensor(pin, id, name, type, units) {
+  _referenceVoltage = 5.0;
+}
+
+AnalogSensor::AnalogSensor(int pin, char* id, char* name, char* type) : SimplePinSensor(pin, id, name, type, NULL) {
+	_referenceVoltage = 5.0;
+}
 
 int AnalogSensor::readRaw() {
   return analogRead(_pin);
 }
 
+float AnalogSensor::convertRaw(int rawValue) {
+	return convertRawToVoltage(rawValue);
+}
+
+float AnalogSensor::convertRawToVoltage(int rawValue) {
+	return rawValue * _referenceVoltage / 1024;
+}
+
+void AnalogSensor::setReferenceVoltage(float referenceVoltage) {
+  _referenceVoltage = referenceVoltage;
+}
+
 //-------------------------------------------
 
-DigitalSensor::DigitalSensor(int pin, char* id, char* name, char* type) : SimplePinSensor(pin, id, name, type) {}
+DigitalSensor::DigitalSensor(int pin, char* id, char* name, char* type, char* units) : SimplePinSensor(pin, id, name, type, units) {}
+
+DigitalSensor::DigitalSensor(int pin, char* id, char* name, char* type) : SimplePinSensor(pin, id, name, type, NULL) {}
 
 int DigitalSensor::readRaw() {
   return digitalRead(_pin);
 }
 
+//-------------------------------------------
+
+TMP36TemperatureSensor::TMP36TemperatureSensor(int pin, char* id, char* name) : AnalogSensor(pin, id, name, "temperature", "f") {}
+
+float TMP36TemperatureSensor::convertRaw(int rawValue) {
+	
+	float voltage = rawValue * _referenceVoltage / 1024;
+    float temperatureC = (voltage - 0.5) * 100;
+    float temperatureF = (temperatureC * 9.0 / 5.0) + 32;
+	return temperatureF;
+}
+	
 //-------------------------------------------
 
 SensorCollection::SensorCollection(char* id, char* name) {
@@ -78,7 +124,7 @@ SimpleSensor* SensorCollection::getSensor(int index) {
   return _sensors[index];
 }
 
-void SensorCollection::dumpRawValues(Print &printer) {
+void SensorCollection::dumpValues(Print &printer) {
   for (int i = 0; i < _size; i++) {
     SimpleSensor* sensor = _sensors[i];
 
@@ -88,7 +134,7 @@ void SensorCollection::dumpRawValues(Print &printer) {
   }
 }
 
-void SensorCollection::dumpRawValuesAsJson(Print &printer) {
+void SensorCollection::dumpValuesAsJson(Print &printer) {
 
   JsonPrinter jsonPrinter(printer);
   
@@ -108,7 +154,7 @@ void SensorCollection::dumpRawValuesAsJson(Print &printer) {
   for (int i = 0; i < _size; i++) {
     SimpleSensor* sensor = _sensors[i];
 	
-	dumpRawValueAsJson(jsonPrinter, sensor);
+	dumpValueAsJson(jsonPrinter, sensor);
 	
     if (i < _size - 1) {
       jsonPrinter.comma();
@@ -120,24 +166,31 @@ void SensorCollection::dumpRawValuesAsJson(Print &printer) {
   jsonPrinter.newline();
 }
 
-void SensorCollection::dumpRawValueAsJson(JsonPrinter& jsonPrinter, SimpleSensor* sensor) {
+void SensorCollection::dumpValueAsJson(JsonPrinter& jsonPrinter, SimpleSensor* sensor) {
+
+	int rawValue = sensor->readRaw();
+	float value = sensor->convertRaw(rawValue);
 
 	jsonPrinter.startObject();
 	
-	jsonPrinter.property("id");
-	jsonPrinter.stringValue(sensor->getId());
+	jsonPrinter.stringProperty("id", sensor->getId());
 	jsonPrinter.comma();
 	
-	jsonPrinter.property("name");
-	jsonPrinter.stringValue(sensor->getName());
+	jsonPrinter.stringProperty("name", sensor->getName());
 	jsonPrinter.comma();
 	
-	jsonPrinter.property("type");
-	jsonPrinter.stringValue(sensor->getType());
+	jsonPrinter.stringProperty("type", sensor->getType());
 	jsonPrinter.comma();
 	
-	jsonPrinter.property("raw_value");
-	jsonPrinter.intValue(sensor->readRaw());
+	jsonPrinter.floatProperty("value", value);
+	jsonPrinter.comma();	
+	
+	jsonPrinter.intProperty("raw_value", rawValue);
+	jsonPrinter.comma();
+	
+	if (sensor->getUnits() != NULL) {
+		jsonPrinter.stringProperty("units", sensor->getUnits());			
+	}
 	
 	jsonPrinter.endObject();	
 }
