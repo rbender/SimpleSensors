@@ -34,3 +34,13 @@ void SensorCollection::addSensor(SimpleSensor& sensor) {
 SimpleSensor* SensorCollection::getSensor(int index) {
   return _sensors[index];
 }
+
+SimpleSensor* SensorCollection::getSensor(char* id) {
+  for (int i = 0; i < _size; i++) {
+  	SimpleSensor* sensor = _sensors[i];
+		if (strcmp(id, sensor->getId()) == 0) {
+			return sensor;
+		}
+  }
+	return NULL;
+}

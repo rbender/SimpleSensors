@@ -11,6 +11,7 @@ class SensorCollection {
     int getSize() const;
     void addSensor(SimpleSensor& sensor);
     SimpleSensor* getSensor(int index);
+		SimpleSensor* getSensor(char* id);
 
   private:
     SimpleSensor* _sensors[MAX_SENSORS];
