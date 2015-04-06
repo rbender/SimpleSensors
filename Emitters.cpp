@@ -74,9 +74,9 @@ void JsonSensorEmitter::emitSensor(SimpleSensor* sensor) {
 	_jsonPrinter.comma();	
 	
 	_jsonPrinter.intProperty("raw_value", rawValue);
-	_jsonPrinter.comma();
 	
 	if (sensor->getUnits() != NULL) {
+		_jsonPrinter.comma();
 		_jsonPrinter.stringProperty("units", sensor->getUnits());			
 	}
 	
