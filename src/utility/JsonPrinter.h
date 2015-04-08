@@ -6,34 +6,28 @@
 class JsonPrinter {
 
 public:
-  
-    JsonPrinter(Print& printer);
       
-    void startObject();
-    void endObject();
+    void startObject(Print& printer);
+    void endObject(Print& printer);
 
-    void startArray();    
-    void endArray();
+    void startArray(Print& printer);    
+    void endArray(Print& printer);
 
-    void property(char* name);
+    void property(Print& printer, char* name);
 
-    void stringValue(char *value);    
-    void intValue(int value);
-    void floatValue(float value);    
-    void booleanValue(boolean value);
+    void stringValue(Print& printer, char *value);    
+    void intValue(Print& printer, int value);
+    void floatValue(Print& printer, float value);    
+    void booleanValue(Print& printer, boolean value);
 
-    void stringProperty(char* name, char*value);
-    void intProperty(char* name, int value);
-    void floatProperty(char* name, float value);    
-    void booleanProperty(char* name, boolean value);
+    void stringProperty(Print& printer, char* name, char*value);
+    void intProperty(Print& printer, char* name, int value);
+    void floatProperty(Print& printer, char* name, float value);    
+    void booleanProperty(Print& printer, char* name, boolean value);
 
-    void comma();
+    void comma(Print& printer);
 
-    void newline();
-
-private:
-
-    Print* _printer;
+    void newline(Print& printer);
 };
 
 #endif

@@ -3,21 +3,16 @@
 class PlainTextSensorEmitter {
 
     public:
-        PlainTextSensorEmitter(Print &printer);
-        void emitSensor(SimpleSensor* sensor);
-        void emitSensorCollection(SensorCollection& sensors);
-
-    private:
-        Print* _printer;		
+        void emitSensor(Print &printer, SimpleSensor* sensor);
+        void emitSensorCollection(Print &printer, SensorCollection& sensors);
 };
 
 class JsonSensorEmitter {
 
     public:
-        JsonSensorEmitter(Print &printer);
-        void emitSensor(SimpleSensor* sensor);
-        void emitSensorCollection(SensorCollection& sensors);
-
+        void emitSensor(Print& printer, SimpleSensor* sensor);
+        void emitSensorCollection(Print& printer, SensorCollection& sensors);	
+    
     private:
-        JsonPrinter _jsonPrinter;	
+        JsonPrinter _jsonPrinter;
 };

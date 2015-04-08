@@ -1,80 +1,76 @@
 #include "Arduino.h"
 
 #include "JsonPrinter.h"
-
-JsonPrinter::JsonPrinter(Print& printer) {
-    _printer = &printer;  
-}
   
-void JsonPrinter::startObject() {
-    _printer->print("{");
+void JsonPrinter::startObject(Print& printer) {
+    printer.print("{");
 }
 
-void JsonPrinter::endObject() {
-    _printer->print("}");
+void JsonPrinter::endObject(Print& printer) {
+    printer.print("}");
 }
 
-void JsonPrinter::startArray() {
-    _printer->print("[");
+void JsonPrinter::startArray(Print& printer) {
+    printer.print("[");
 }
 
-void JsonPrinter::endArray() {
-    _printer->print("]");
+void JsonPrinter::endArray(Print& printer) {
+    printer.print("]");
 }
 
-void JsonPrinter::property(char* name) {
-    _printer->print("\"");
-    _printer->print(name);
-    _printer->print("\":");  
+void JsonPrinter::property(Print& printer, char* name) {
+    printer.print("\"");
+    printer.print(name);
+    printer.print("\":");  
 }
 
-void JsonPrinter::stringValue(char *value) {
-    _printer->print("\"");
-    _printer->print(value);
-    _printer->print("\"");
+void JsonPrinter::stringValue(Print& printer, char *value) {
+    printer.print("\"");
+    printer.print(value);
+    printer.print("\"");
 }
 
-void JsonPrinter::intValue(int value) {
-    _printer->print(value);  
+void JsonPrinter::intValue(Print& printer, int value) {
+    printer.print(value);  
 }
 
-void JsonPrinter::floatValue(float value) {
-    _printer->print(value);  
+void JsonPrinter::floatValue(Print& printer, float value) {
+    printer.print(value);  
 }
 
-void JsonPrinter::booleanValue(boolean value) {
+void JsonPrinter::booleanValue(Print& printer, boolean value) {
     if (value == true) {
-        _printer->print("true");
+        printer.print("true");
     } else {
-        _printer->print("false");
+        printer.print("false");
     }
 }
 
-void JsonPrinter::stringProperty(char* name, char*value) {
-    property(name);
-    stringValue(value);
+void JsonPrinter::stringProperty(Print& printer, char* name, char*value) {
+    property(printer, name);
+    stringValue(printer, value);
 }
 
-void JsonPrinter::intProperty(char* name, int value) {
-    property(name);
-    intValue(value);
+void JsonPrinter::intProperty(Print& printer, char* name, int value) {
+    property(printer, name);
+    intValue(printer, value);
 }
 
-void JsonPrinter::floatProperty(char* name, float value) {
-    property(name);
-    floatValue(value);
+void JsonPrinter::floatProperty(Print& printer, char* name, float value) {
+    property(printer, name);
+    floatValue(printer, value);
 }
 
-void JsonPrinter::booleanProperty(char* name, boolean value) {
-    property(name);
-    booleanValue(value);
+void JsonPrinter::booleanProperty(Print& printer, char* name, boolean value) {
+    property(printer, name);
+    booleanValue(printer, value);
 }
 
-void JsonPrinter::comma() {
-    _printer->print(",");
+void JsonPrinter::comma(Print& printer) {
+    printer.print(",");
 }
 
-void JsonPrinter::newline() {
-    _printer->println();
+void JsonPrinter::newline(Print& printer) {
+    printer.println();
 }
 

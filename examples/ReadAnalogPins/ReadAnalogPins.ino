@@ -1,11 +1,11 @@
 #include <SimpleSensors.h>
 
 AnalogSensor sensor1(A0, "light", "Light", "light");
-AnalogSensor sensor1(A1, "temp", "Temperature", "temperature");
+AnalogSensor sensor2(A1, "temp", "Temperature", "temperature");
 
 SensorCollection sensors("example", "Example Sensor Collection");
 
-JsonSensorEmitter emitter(Serial);
+JsonSensorEmitter emitter;
 
 void setup() {
 
@@ -18,6 +18,6 @@ void setup() {
 
 void loop(){
 
-  emitter.emitSensorCollection(sensors);
+  emitter.emitSensorCollection(Serial, sensors);
   delay(500);
 }
