@@ -2,20 +2,20 @@ const int MAX_SENSORS = 20;
 
 class SensorCollection {
 
-  public:
-    SensorCollection(char* id, char* name);
-    void setup();
+    public:
+        SensorCollection(char* id, char* name);
+        void setup();
 
-    char* getId() const;
-		char* getName() const;
-    int getSize() const;
-    void addSensor(SimpleSensor& sensor);
-    SimpleSensor* getSensor(int index);
-		SimpleSensor* getSensor(char* id);
+        char* getId() const;
+        char* getName() const;
+        int getSize() const;
+        void addSensor(SimpleSensor& sensor);
+        SimpleSensor* getSensor(int index);
+        SimpleSensor* getSensor(char* id);
 
-  private:
-    SimpleSensor* _sensors[MAX_SENSORS];
-    int _size;
-    char* _id;
-    char* _name;
+    private:
+        SimpleSensor* _sensors[MAX_SENSORS];
+        int _size;
+        char* _id;
+        char* _name;
 };
