@@ -1,8 +1,8 @@
 # Simple Sensor Library
 
-This project is an object-oriented Arduino library for reading sensor values and outputting them to other systems. Sensors are configured with metadata, such as a short id, a name, type and the units of measurement used. 
+This project is an object-oriented Arduino library for reading sensor values and outputting them to other systems. 
 
-SimpleSensors are gathered into a SensorCollection, which also has its own short id and name. 
+Sensors are configured with metadata, such as a short id, a name, type and the units of measurement used.  Sesnors are gathered into a SensorCollection, which also has its own short id and name. Emitters then read the values of the sensors and output them to a serial or network connection.
 
 ## Object Model 
 
@@ -64,13 +64,17 @@ This is an example, passed through a pretty-printer for legibility:
 
 SimpleSensors return a single floating-point value, which is fine for things like temperature, humidity or baromatric pressure. This does not work well for more complex sensors where a reading is comprised of multiple values, such as accelerometer that returns X,Y and Z values. A workaround would be to create three sensor objects, one for each axis.
 
+Likewise floating-point numbers aren't an intuitive data type for sensors that report on/off values such as buttons, switches or motion sensors.
+
+The SensorCollection uses a hardcoded MAX_SENORS constant for the maximum number of sensors, which is then used to create its internal array of sensors.
 ##Future Improvements
 
-- More documentation
+- More documentation and source code comments
 - More sensor subtypes
 - Support for I2C sensors
 - Triggers (so sensor data in transmitted when values change, instead of using timed intervals)
 - XML output format
+- Make MAX_SENSORS configurable or dynamic.
 
 I envision SimpleSensors as being part of a larger framework for building sensor devices and collecting their data. I hope to build libraries for transmitting sensor data over HTTP, XBee, MQTT, etc. There will also need to be code for consuming the sensor data, storing it, graphing it, sending it to the cloud, etc. 
 
