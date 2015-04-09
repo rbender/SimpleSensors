@@ -2,7 +2,7 @@
 
 This project is an object-oriented Arduino library for reading sensor values and outputting them to other systems. 
 
-Sensors are configured with metadata, such as a short id, a name, type and the units of measurement used.  Sesnors are gathered into a SensorCollection, which also has its own short id and name. Emitters then read the values of the sensors and output them to a serial or network connection.
+Sensors are configured with metadata, such as a short id, a name, type and the units of measurement used.  Sensors are gathered into a SensorCollection, which also has its own short id and name. SensorStreamers then read the values of the sensors and output them to a serial or network connection.
 
 ## Object Model 
 
@@ -29,9 +29,9 @@ The `SensorCollection` object contains an array of SimpleSensors, along with a s
 - `getSensor(int index)`: Gets a sensor by its index in the array. Useful for looping over the sensors in the collection.
 - `getSensor(char* id)`: Gets a sensor by its short id.
 
-Sensor data is read and output via Emitters. The library currently includers two emitter implementations: One that outputs plain text and one that outputs JSON. Both use the Arduino "Print" interface which is supported by Serial connections and other libraries.
+Sensor data is read and output via SensorStreamers. The library currently includers two streamer implementations: One that outputs plain text and one that outputs JSON. Both use the Arduino "Print" interface which is supported by Serial connections and other libraries.
 
-A separate project will support emitting over Ethernet and WiFi.
+A separate project will support streaming sensor data over Ethernet and WiFi.
 
 ##JSON Format
 
