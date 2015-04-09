@@ -6,6 +6,6 @@
 #include "core/SimpleSensorsBase.h"
 #include "core/SensorImplementations.h"
 #include "core/SensorCollection.h"
-#include "core/Emitters.h"
+#include "core/SensorStreamers.h"
 
 #endif

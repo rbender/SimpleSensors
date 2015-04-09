@@ -1,13 +1,20 @@
 #include "utility/JsonPrinter.h"
 
-class PlainTextSensorStreamer {
+class SensorStreamer {
+
+    public:
+        virtual void streamSensor(Print &printer, SimpleSensor* sensor);
+        virtual void streamSensors(Print &printer, SensorCollection& sensors);
+};
+
+class PlainTextSensorStreamer : public SensorStreamer {
 
     public:
         void streamSensor(Print &printer, SimpleSensor* sensor);
         void streamSensors(Print &printer, SensorCollection& sensors);
 };
 
-class JsonSensorStreamer {
+class JsonSensorStreamer : public SensorStreamer {
 
     public:
         void streamSensor(Print& printer, SimpleSensor* sensor);
@@ -15,5 +22,5 @@ class JsonSensorStreamer {
     
     private:
         JsonPrinter _jsonPrinter;
-				void streamSensor(Print& printer, SimpleSensor* sensor, boolean standalone);
+        void streamSensor(Print& printer, SimpleSensor* sensor, boolean standalone);
 };
