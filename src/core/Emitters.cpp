@@ -2,24 +2,24 @@
 #include "SimpleSensors.h"
 #include "utility/JsonPrinter.h"
 
-void PlainTextSensorEmitter::emitSensor(Print &printer, SimpleSensor* sensor) {
+void PlainTextSensorStreamer::streamSensor(Print &printer, SimpleSensor* sensor) {
 
     printer.print(sensor->getId());
     printer.print("=");
     printer.println(sensor->readRaw());
 }
 
-void PlainTextSensorEmitter::emitSensorCollection(Print &printer, SensorCollection& sensors) {
+void PlainTextSensorStreamer::streamSensors(Print &printer, SensorCollection& sensors) {
 
     for (int i = 0; i < sensors.getSize(); i++) {
         SimpleSensor* sensor = sensors.getSensor(i);
-        emitSensor(printer, sensor);
+        streamSensor(printer, sensor);
     }	
 }
 
 //-------------------------------------------
 
-void JsonSensorEmitter::emitSensorCollection(Print &printer, SensorCollection& sensors) {
+void JsonSensorStreamer::streamSensors(Print &printer, SensorCollection& sensors) {
 
     _jsonPrinter.startObject(printer);
   
@@ -36,7 +36,7 @@ void JsonSensorEmitter::emitSensorCollection(Print &printer, SensorCollection& s
     for (int i = 0; i < numSensors; i++) {
         SimpleSensor* sensor = sensors.getSensor(i);
 
-        emitSensor(printer, sensor);
+        streamSensor(printer, sensor, false);
 
         if (i < numSensors - 1) {
             _jsonPrinter.comma(printer);
@@ -48,7 +48,11 @@ void JsonSensorEmitter::emitSensorCollection(Print &printer, SensorCollection& s
     _jsonPrinter.newline(printer);
 }
 
-void JsonSensorEmitter::emitSensor(Print &printer, SimpleSensor* sensor) {
+void JsonSensorStreamer::streamSensor(Print &printer, SimpleSensor* sensor) {
+	streamSensor(printer, sensor, true);
+}
+
+void JsonSensorStreamer::streamSensor(Print &printer, SimpleSensor* sensor, boolean standalone) {
 
     int rawValue = sensor->readRaw();
     float value = sensor->convertRaw(rawValue);
@@ -75,4 +79,8 @@ void JsonSensorEmitter::emitSensor(Print &printer, SimpleSensor* sensor) {
     }
 
     _jsonPrinter.endObject(printer);
+		
+		if (standalone) {
+			_jsonPrinter.newline(printer);
+		}
 }
