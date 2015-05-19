@@ -24,6 +24,14 @@ char* SimpleSensor::getUnits() const {
     return _units;
 }
 
+boolean SimpleSensor::hasRaw() const {
+    return true;
+}
+
+int SimpleSensor::readRaw() {
+    return -1;
+}
+
 float SimpleSensor::read() {
     int rawValue = readRaw();
     return convertRaw(rawValue);
@@ -32,6 +40,8 @@ float SimpleSensor::read() {
 float SimpleSensor::convertRaw(int rawValue) {
     return (float)rawValue;
 }
+
+void SimpleSensor::setup() {}
 
 //-------------------------------------------
 

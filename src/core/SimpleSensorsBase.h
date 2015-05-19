@@ -8,8 +8,9 @@ class SimpleSensor {
         char* getName() const;
         char* getType() const;
         char* getUnits() const;
+        virtual boolean hasRaw() const;
 
-        float read();
+        virtual float read();
         virtual int readRaw();
         virtual float convertRaw(int rawValue);
 

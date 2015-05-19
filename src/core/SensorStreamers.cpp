@@ -6,7 +6,7 @@ void PlainTextSensorStreamer::streamSensor(Print &printer, SimpleSensor* sensor)
 
     printer.print(sensor->getId());
     printer.print("=");
-    printer.println(sensor->readRaw());
+    printer.println(sensor->read());
 }
 
 void PlainTextSensorStreamer::streamSensors(Print &printer, SensorCollection& sensors) {
@@ -54,9 +54,6 @@ void JsonSensorStreamer::streamSensor(Print &printer, SimpleSensor* sensor) {
 
 void JsonSensorStreamer::streamSensor(Print &printer, SimpleSensor* sensor, boolean standalone) {
 
-    int rawValue = sensor->readRaw();
-    float value = sensor->convertRaw(rawValue);
-
     _jsonPrinter.startObject(printer);
 
     _jsonPrinter.stringProperty(printer, "id", sensor->getId());
@@ -68,10 +65,20 @@ void JsonSensorStreamer::streamSensor(Print &printer, SimpleSensor* sensor, bool
     _jsonPrinter.stringProperty(printer, "type", sensor->getType());
     _jsonPrinter.comma(printer);
 
-    _jsonPrinter.floatProperty(printer, "value", value);
-    _jsonPrinter.comma(printer);	
+    float value;
+    if (sensor->hasRaw()) {
+        
+        int rawValue = sensor->readRaw();
+        value = sensor->convertRaw(rawValue);
 
-    _jsonPrinter.intProperty(printer, "raw_value", rawValue);
+        _jsonPrinter.intProperty(printer, "raw_value", rawValue);
+        _jsonPrinter.comma(printer);
+        
+    } else {        
+        value = sensor->read();
+    }
+
+    _jsonPrinter.floatProperty(printer, "value", value);	
 
     if (sensor->getUnits() != NULL) {
         _jsonPrinter.comma(printer);
